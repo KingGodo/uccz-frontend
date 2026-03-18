@@ -2,47 +2,47 @@
 
 const news = [
   {
-    title: "Annual Conference 2026",
-    desc: "Join us for a nationwide gathering of faith and unity.",
+    title: "National Annual Conference",
+    desc: "A nationwide gathering focused on unity, leadership development, and spiritual renewal.",
   },
   {
-    title: "Youth Fellowship Launch",
-    desc: "Empowering young people through CYF initiatives.",
+    title: "Youth Fellowship Expansion",
+    desc: "Strengthening CYF structures to empower the next generation of church leaders.",
   },
   {
-    title: "Community Outreach",
-    desc: "Serving communities with compassion and support.",
+    title: "Community Outreach Programs",
+    desc: "Serving vulnerable communities through coordinated missions and social support initiatives.",
   },
 ];
 
 export default function NewsSection() {
   return (
-    <section className="py-24 bg-slate-50">
+    <section className="py-28 bg-white border-t border-slate-100">
 
       <div className="max-w-7xl mx-auto px-6">
 
-        <div className="text-center">
+        <div className="max-w-xl">
           <p className="text-xs uppercase tracking-widest text-secondary">
             News & Events
           </p>
 
           <h2 className="mt-3 text-3xl font-semibold text-slate-900">
-            Latest Updates
+            Church Updates & Activities
           </h2>
         </div>
 
-        <div className="mt-12 grid md:grid-cols-3 gap-6">
+        <div className="mt-14 grid md:grid-cols-3 gap-7">
 
           {news.map((item, i) => (
             <div
               key={i}
-              className="p-6 border border-slate-200 rounded-xl bg-white"
+              className="p-7 border border-slate-200 rounded-xl bg-white hover:shadow-xl transition duration-300"
             >
-              <h3 className="text-sm font-semibold text-slate-900">
+              <h3 className="text-base font-semibold text-slate-900">
                 {item.title}
               </h3>
 
-              <p className="mt-3 text-sm text-slate-600">
+              <p className="mt-4 text-sm text-slate-600 leading-relaxed">
                 {item.desc}
               </p>
             </div>

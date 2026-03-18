@@ -1,168 +1,250 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { api, ApiResponse } from "@/lib/api";
 
-interface FormData {
-  conference: string;
-  region: string;
-  church: string;
-  name: string;
-  email: string;
-  phone: string;
-}
+import {
+  Conference,
+  Region,
+  Church,
+  Ministry,
+  MemberFormData,
+} from "@/types/member";
 
 export default function MembershipPage() {
-  const [form, setForm] = useState<FormData>({
-    conference: "",
-    region: "",
-    church: "",
-    name: "",
-    email: "",
-    phone: "",
+  const [conferences, setConferences] = useState<Conference[]>([]);
+  const [regions, setRegions] = useState<Region[]>([]);
+  const [churches, setChurches] = useState<Church[]>([]);
+  const [ministries, setMinistries] = useState<Ministry[]>([]);
+
+  const [loading, setLoading] = useState(false);
+
+  const [form, setForm] = useState<MemberFormData>({
+    church_id: 0,
+    first_name: "",
+    last_name: "",
+    sex: "",
+    date_of_birth: "",
+    has_relative_in_uccz: false,
+    ministries: [],
   });
 
+  const [selectedConference, setSelectedConference] = useState<number | null>(null);
+  const [selectedRegion, setSelectedRegion] = useState<number | null>(null);
+
+  // 🔥 FETCH CONFERENCES + MINISTRIES
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const confRes = await api.get<ApiResponse<Conference[]>>("/conferences");
+        setConferences(confRes.data.data);
+
+        const minRes = await api.get<ApiResponse<Ministry[]>>("/ministries");
+        setMinistries(minRes.data.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // 🔥 FETCH REGIONS
+  useEffect(() => {
+    if (!selectedConference) return;
+
+    const fetchRegions = async () => {
+      try {
+        const res = await api.get<ApiResponse<Region[]>>(
+          `/regions?conference_id=${selectedConference}`
+        );
+        setRegions(res.data.data);
+        setChurches([]);
+        setSelectedRegion(null);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchRegions();
+  }, [selectedConference]);
+
+  // 🔥 FETCH CHURCHES
+  useEffect(() => {
+    if (!selectedRegion) return;
+
+    const fetchChurches = async () => {
+      try {
+        const res = await api.get<ApiResponse<Church[]>>(
+          `/churches?region_id=${selectedRegion}`
+        );
+        setChurches(res.data.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchChurches();
+  }, [selectedRegion]);
+
+  // 🔥 HANDLE INPUT
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    name: keyof MemberFormData,
+    value: string | number | boolean
   ) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log(form);
+  // 🔥 MINISTRIES
+  const toggleMinistry = (id: number) => {
+    setForm((prev) => ({
+      ...prev,
+      ministries: prev.ministries.includes(id)
+        ? prev.ministries.filter((m) => m !== id)
+        : [...prev.ministries, id],
+    }));
+  };
 
-    alert("Membership application submitted!");
+  // 🔥 SUBMIT
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const res = await api.post<ApiResponse<{ id: number }>>(
+        "/members",
+        form
+      );
+
+      const memberId = res.data.data.id;
+
+      await Promise.all(
+        form.ministries.map((ministry_id) =>
+          api.post("/member-ministries", {
+            member_id: memberId,
+            ministry_id,
+          })
+        )
+      );
+
+      window.location.href = "/membership/success";
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 py-24 px-6">
+    <section className="py-24 bg-gray-50">
+      <div className="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow">
 
-      <div className="max-w-3xl mx-auto">
+        <h1 className="text-2xl font-semibold mb-6">
+          Membership Registration
+        </h1>
 
-        {/* HEADER */}
-        <div className="text-center">
-          <p className="text-xs uppercase tracking-widest text-secondary">
-            Membership
-          </p>
-
-          <h1 className="mt-3 text-3xl font-semibold text-slate-900">
-            Join the Church
-          </h1>
-
-          <p className="mt-4 text-sm text-slate-600">
-            Select your church structure and complete your membership application.
-          </p>
-        </div>
-
-        {/* FORM */}
-        <form
-          onSubmit={handleSubmit}
-          className="mt-10 bg-white p-8 rounded-xl border border-slate-200 space-y-6"
-        >
-
-          {/* 🔥 STRUCTURE SELECTION */}
+        <form onSubmit={handleSubmit} className="space-y-6">
 
           {/* Conference */}
-          <div>
-            <label className="text-sm text-slate-700">Conference</label>
-            <select
-              name="conference"
-              required
-              value={form.conference}
-              onChange={handleChange}
-              className="mt-2 w-full border border-slate-200 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select Conference</option>
-              <option value="Harare">Harare Conference</option>
-              <option value="Bulawayo">Bulawayo Conference</option>
-            </select>
-          </div>
+          <select
+            className="w-full border p-3 rounded"
+            onChange={(e) => setSelectedConference(Number(e.target.value))}
+          >
+            <option>Select Conference</option>
+            {conferences.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
 
           {/* Region */}
-          <div>
-            <label className="text-sm text-slate-700">Region</label>
-            <select
-              name="region"
-              required
-              value={form.region}
-              onChange={handleChange}
-              className="mt-2 w-full border border-slate-200 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select Region</option>
-              <option value="Region 1">Region 1</option>
-              <option value="Region 2">Region 2</option>
-            </select>
-          </div>
+          <select
+            className="w-full border p-3 rounded"
+            onChange={(e) => setSelectedRegion(Number(e.target.value))}
+          >
+            <option>Select Region</option>
+            {regions.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.name}
+              </option>
+            ))}
+          </select>
 
           {/* Church */}
+          <select
+            className="w-full border p-3 rounded"
+            onChange={(e) => handleChange("church_id", Number(e.target.value))}
+          >
+            <option>Select Church</option>
+            {churches.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+
+          {/* Names */}
+          <input
+            placeholder="First Name"
+            className="w-full border p-3 rounded"
+            onChange={(e) => handleChange("first_name", e.target.value)}
+          />
+
+          <input
+            placeholder="Last Name"
+            className="w-full border p-3 rounded"
+            onChange={(e) => handleChange("last_name", e.target.value)}
+          />
+
+          {/* DOB */}
+          <input
+            type="date"
+            className="w-full border p-3 rounded"
+            onChange={(e) => handleChange("date_of_birth", e.target.value)}
+          />
+
+          {/* Sex */}
+          <select
+            className="w-full border p-3 rounded"
+            onChange={(e) => handleChange("sex", e.target.value)}
+          >
+            <option>Sex</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+
+          {/* Ministries */}
           <div>
-            <label className="text-sm text-slate-700">Church</label>
-            <select
-              name="church"
-              required
-              value={form.church}
-              onChange={handleChange}
-              className="mt-2 w-full border border-slate-200 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select Church</option>
-              <option value="Gweru Central">Gweru Central</option>
-              <option value="Mkoba">Mkoba</option>
-            </select>
+            <p className="mb-2 font-medium">Select Ministries</p>
+            <div className="grid grid-cols-2 gap-2">
+              {ministries.map((m) => (
+                <label key={m.id} className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={form.ministries.includes(m.id)}
+                    onChange={() => toggleMinistry(m.id)}
+                  />
+                  {m.name}
+                </label>
+              ))}
+            </div>
           </div>
 
-          {/* 🔥 PERSONAL DETAILS */}
-
-          {/* Name */}
-          <div>
-            <label className="text-sm text-slate-700">Full Name</label>
-            <input
-              type="text"
-              name="name"
-              required
-              value={form.name}
-              onChange={handleChange}
-              className="mt-2 w-full border border-slate-200 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* Email */}
-          <div>
-            <label className="text-sm text-slate-700">Email</label>
-            <input
-              type="email"
-              name="email"
-              required
-              value={form.email}
-              onChange={handleChange}
-              className="mt-2 w-full border border-slate-200 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* Phone */}
-          <div>
-            <label className="text-sm text-slate-700">Phone Number</label>
-            <input
-              type="text"
-              name="phone"
-              required
-              value={form.phone}
-              onChange={handleChange}
-              className="mt-2 w-full border border-slate-200 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* SUBMIT */}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2.5 rounded-md text-sm hover:bg-blue-700 transition"
+            disabled={loading}
+            className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700"
           >
-            Submit Application
+            {loading ? "Submitting..." : "Register"}
           </button>
+
         </form>
       </div>
-    </main>
+    </section>
   );
 }

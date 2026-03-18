@@ -2,7 +2,7 @@
 
 export default function SponsorsSection() {
   return (
-    <section className="py-20 bg-white border-t border-slate-100">
+    <section className="py-24 bg-slate-50 border-t border-slate-100">
 
       <div className="max-w-6xl mx-auto px-6 text-center">
 
@@ -10,12 +10,16 @@ export default function SponsorsSection() {
           Partners & Sponsors
         </p>
 
-        <div className="mt-8 flex justify-center gap-12 opacity-70">
+        <h2 className="mt-3 text-2xl font-semibold text-slate-900">
+          Organisations Supporting Our Mission
+        </h2>
 
-          {[1, 2, 3, 4].map((i) => (
+        <div className="mt-12 flex flex-wrap justify-center gap-14 opacity-70">
+
+          {[1, 2, 3, 4, 5].map((i) => (
             <div
               key={i}
-              className="h-10 w-24 bg-slate-200 rounded-md"
+              className="h-12 w-32 bg-slate-200 rounded-md"
             />
           ))}
 

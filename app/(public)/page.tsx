@@ -10,10 +10,13 @@ import {
   SponsorsSection,
   CallToActionSection,
 } from '@/components/landing';
+import Navbar from '@/components/layout/navbar';
+import Footer from '@/components/layout/footer';
 
 export default function HomePage() {
   return (
     <div className="flex flex-col">
+      <Navbar />
       <HeroSection />
       <AboutSection />
       <ServicesSection />
@@ -22,6 +25,7 @@ export default function HomePage() {
       <NewsSection />
       <SponsorsSection />
       <CallToActionSection />
+      <Footer />
     </div>
   );
 }
