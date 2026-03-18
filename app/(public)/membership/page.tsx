@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { api, ApiResponse } from "@/lib/api";
+import Link from "next/link";
 
 import {
   Conference,
@@ -10,6 +11,18 @@ import {
   Ministry,
   MemberFormData,
 } from "@/types/member";
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function MembershipPage() {
   const [conferences, setConferences] = useState<Conference[]>([]);
@@ -140,110 +153,186 @@ export default function MembershipPage() {
   };
 
   return (
-    <section className="py-24 bg-gray-50">
-      <div className="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow">
-
-        <h1 className="text-2xl font-semibold mb-6">
-          Membership Registration
-        </h1>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-
-          {/* Conference */}
-          <select
-            className="w-full border p-3 rounded"
-            onChange={(e) => setSelectedConference(Number(e.target.value))}
-          >
-            <option>Select Conference</option>
-            {conferences.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-
-          {/* Region */}
-          <select
-            className="w-full border p-3 rounded"
-            onChange={(e) => setSelectedRegion(Number(e.target.value))}
-          >
-            <option>Select Region</option>
-            {regions.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.name}
-              </option>
-            ))}
-          </select>
-
-          {/* Church */}
-          <select
-            className="w-full border p-3 rounded"
-            onChange={(e) => handleChange("church_id", Number(e.target.value))}
-          >
-            <option>Select Church</option>
-            {churches.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-
-          {/* Names */}
-          <input
-            placeholder="First Name"
-            className="w-full border p-3 rounded"
-            onChange={(e) => handleChange("first_name", e.target.value)}
-          />
-
-          <input
-            placeholder="Last Name"
-            className="w-full border p-3 rounded"
-            onChange={(e) => handleChange("last_name", e.target.value)}
-          />
-
-          {/* DOB */}
-          <input
-            type="date"
-            className="w-full border p-3 rounded"
-            onChange={(e) => handleChange("date_of_birth", e.target.value)}
-          />
-
-          {/* Sex */}
-          <select
-            className="w-full border p-3 rounded"
-            onChange={(e) => handleChange("sex", e.target.value)}
-          >
-            <option>Sex</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
-
-          {/* Ministries */}
+    <section className="py-16 md:py-24 bg-muted/30">
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="flex items-end justify-between gap-4 mb-6">
           <div>
-            <p className="mb-2 font-medium">Select Ministries</p>
-            <div className="grid grid-cols-2 gap-2">
-              {ministries.map((m) => (
-                <label key={m.id} className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={form.ministries.includes(m.id)}
-                    onChange={() => toggleMinistry(m.id)}
-                  />
-                  {m.name}
-                </label>
-              ))}
-            </div>
+            <h1 className="text-3xl font-semibold tracking-tight">
+              Membership Registration
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Register a new member in the UCCZ membership system.
+            </p>
           </div>
+          <Link href="/" className="hidden sm:block">
+            <Button variant="outline">Back to home</Button>
+          </Link>
+        </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700"
-          >
-            {loading ? "Submitting..." : "Register"}
-          </button>
+        <Card>
+          <CardHeader className="border-b">
+            <CardTitle className="text-base">Member details</CardTitle>
+            <CardDescription>
+              Select the conference, region, and church, then fill in the member
+              information.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <form onSubmit={handleSubmit} className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label>Conference</Label>
+                  <Select
+                    onValueChange={(v) =>
+                      setSelectedConference(v ? Number(v) : null)
+                    }
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select conference" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {conferences.map((c) => (
+                        <SelectItem key={c.id} value={String(c.id)}>
+                          {c.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-        </form>
+                <div className="space-y-2">
+                  <Label>Region</Label>
+                  <Select
+                    onValueChange={(v) =>
+                      setSelectedRegion(v ? Number(v) : null)
+                    }
+                    disabled={!selectedConference}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue
+                        placeholder={
+                          selectedConference
+                            ? "Select region"
+                            : "Select conference first"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {regions.map((r) => (
+                        <SelectItem key={r.id} value={String(r.id)}>
+                          {r.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Church</Label>
+                  <Select
+                    onValueChange={(v) =>
+                      handleChange("church_id", v ? Number(v) : 0)
+                    }
+                    disabled={!selectedRegion}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue
+                        placeholder={
+                          selectedRegion ? "Select church" : "Select region first"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {churches.map((c) => (
+                        <SelectItem key={c.id} value={String(c.id)}>
+                          {c.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="first_name">First name</Label>
+                  <Input
+                    id="first_name"
+                    placeholder="e.g. King"
+                    value={form.first_name}
+                    onChange={(e) => handleChange("first_name", e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="last_name">Last name</Label>
+                  <Input
+                    id="last_name"
+                    placeholder="e.g. Godo"
+                    value={form.last_name}
+                    onChange={(e) => handleChange("last_name", e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="date_of_birth">Date of birth</Label>
+                  <Input
+                    id="date_of_birth"
+                    type="date"
+                    value={form.date_of_birth}
+                    onChange={(e) =>
+                      handleChange("date_of_birth", e.target.value)
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Sex</Label>
+                  <Select onValueChange={(v) => handleChange("sex", v)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select sex" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <div className="text-sm font-medium">Ministries</div>
+                  <div className="text-sm text-muted-foreground">
+                    Select all ministries the member belongs to.
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {ministries.map((m) => (
+                    <label
+                      key={m.id}
+                      className="flex items-center gap-3 rounded-lg border bg-background px-3 py-2"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={form.ministries.includes(m.id)}
+                        onChange={() => toggleMinistry(m.id)}
+                        className="h-4 w-4"
+                      />
+                      <span className="text-sm">{m.name}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
+                <Button type="submit" disabled={loading}>
+                  {loading ? "Submitting..." : "Register member"}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </section>
   );
