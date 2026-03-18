@@ -288,7 +288,7 @@ export default function MembershipPage() {
                 </div>
                 <div className="space-y-2">
                   <Label>Sex</Label>
-                  <Select onValueChange={(v) => handleChange("sex", v)}>
+                  <Select onValueChange={(v) => handleChange("sex", String(v))}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select sex" />
                     </SelectTrigger>
