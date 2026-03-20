@@ -8,6 +8,16 @@ import { login, storeToken } from "@/lib/auth";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthUser } from "@/types/user";
 import { resolveRoleRoute } from "@/constants/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 // ✅ Typed error
 interface ApiError {
@@ -70,55 +80,67 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-        
-        {/* 🔥 LOGO */}
-        <div className="flex flex-col items-center mb-6">
-          <Image
-            src="/logo.png" // 👉 place your logo in /public/logo.png
-            alt="UCCZ Logo"
-            width={80}
-            height={80}
-            className="mb-3"
-          />
-          <h1 className="text-2xl font-bold text-gray-800">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-muted/30">
+      <div className="w-full max-w-md">
+        <div className="flex flex-col items-center mb-6 text-center">
+          <Image src="/logo.png" alt="UCCZ Logo" width={72} height={72} />
+          <h1 className="text-2xl font-semibold tracking-tight mt-3">
             UCCZ Membership System
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground mt-1">
             Sign in to your dashboard
           </p>
         </div>
 
-        {/* 📧 EMAIL */}
-        <input
-          type="email"
-          placeholder="Enter your email"
-          className="w-full border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none p-3 mb-4 rounded-lg transition"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle>Login</CardTitle>
+            <CardDescription>
+              Enter your email and password to continue.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleLogin();
+              }}
+              className="space-y-4"
+            >
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  required
+                />
+              </div>
 
-        {/* 🔑 PASSWORD */}
-        <input
-          type="password"
-          placeholder="Enter your password"
-          className="w-full border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none p-3 mb-6 rounded-lg transition"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
+                  required
+                />
+              </div>
 
-        {/* 🔘 BUTTON */}
-        <button
-          onClick={handleLogin}
-          disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 transition text-white py-3 rounded-lg font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed"
-        >
-          {loading ? "Signing in..." : "Login"}
-        </button>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Signing in..." : "Login"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
 
-        {/* 🔻 FOOTER */}
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-muted-foreground mt-6">
           © {new Date().getFullYear()} UCCZ. All rights reserved.
         </p>
       </div>

@@ -12,10 +12,18 @@ import {
   MemberFormData,
 } from "@/types/member";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+
 import {
   Select,
   SelectContent,
@@ -32,6 +40,11 @@ export default function MembershipPage() {
 
   const [loading, setLoading] = useState(false);
 
+  // ✅ STRICTLY STRING (NO NULL)
+  const [selectedConference, setSelectedConference] = useState<string>("");
+  const [selectedRegion, setSelectedRegion] = useState<string>("");
+  const [selectedChurch, setSelectedChurch] = useState<string>("");
+
   const [form, setForm] = useState<MemberFormData>({
     church_id: 0,
     first_name: "",
@@ -42,20 +55,19 @@ export default function MembershipPage() {
     ministries: [],
   });
 
-  const [selectedConference, setSelectedConference] = useState<number | null>(null);
-  const [selectedRegion, setSelectedRegion] = useState<number | null>(null);
-
-  // 🔥 FETCH CONFERENCES + MINISTRIES
+  // 🔥 FETCH INITIAL DATA
   useEffect(() => {
     const fetchData = async () => {
       try {
         const confRes = await api.get<ApiResponse<Conference[]>>("/conferences");
+        console.log("📦 Conferences:", confRes.data.data);
         setConferences(confRes.data.data);
 
         const minRes = await api.get<ApiResponse<Ministry[]>>("/ministries");
+        console.log("📦 Ministries:", minRes.data.data);
         setMinistries(minRes.data.data);
       } catch (err) {
-        console.error(err);
+        console.error("❌ Initial fetch error:", err);
       }
     };
 
@@ -69,13 +81,18 @@ export default function MembershipPage() {
     const fetchRegions = async () => {
       try {
         const res = await api.get<ApiResponse<Region[]>>(
-          `/regions?conference_id=${selectedConference}`
+          `/regions/conference/${selectedConference}`
         );
+
+        console.log("📦 Regions:", res.data.data);
+
         setRegions(res.data.data);
         setChurches([]);
-        setSelectedRegion(null);
+
+        setSelectedRegion("");
+        setSelectedChurch("");
       } catch (err) {
-        console.error(err);
+        console.error("❌ Regions fetch error:", err);
       }
     };
 
@@ -89,18 +106,22 @@ export default function MembershipPage() {
     const fetchChurches = async () => {
       try {
         const res = await api.get<ApiResponse<Church[]>>(
-          `/churches?region_id=${selectedRegion}`
+          `/churches/region/${selectedRegion}`
         );
+
+        console.log("📦 Churches:", res.data.data);
+
         setChurches(res.data.data);
+        setSelectedChurch("");
       } catch (err) {
-        console.error(err);
+        console.error("❌ Churches fetch error:", err);
       }
     };
 
     fetchChurches();
   }, [selectedRegion]);
 
-  // 🔥 HANDLE INPUT
+  // 🔥 HANDLE FORM
   const handleChange = (
     name: keyof MemberFormData,
     value: string | number | boolean
@@ -145,7 +166,7 @@ export default function MembershipPage() {
 
       window.location.href = "/membership/success";
     } catch (err) {
-      console.error(err);
+      console.error("❌ Submit error:", err);
       alert("Something went wrong");
     } finally {
       setLoading(false);
@@ -155,41 +176,53 @@ export default function MembershipPage() {
   return (
     <section className="py-16 md:py-24 bg-muted/30">
       <div className="max-w-4xl mx-auto px-4">
-        <div className="flex items-end justify-between gap-4 mb-6">
+
+        <div className="flex items-end justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight">
+            <h1 className="text-3xl font-semibold">
               Membership Registration
             </h1>
-            <p className="text-muted-foreground mt-1">
-              Register a new member in the UCCZ membership system.
+            <p className="text-muted-foreground">
+              Register a new member into UCCZ.
             </p>
           </div>
-          <Link href="/" className="hidden sm:block">
-            <Button variant="outline">Back to home</Button>
+
+          <Link href="/">
+            <Button variant="outline">Back</Button>
           </Link>
         </div>
 
         <Card>
-          <CardHeader className="border-b">
-            <CardTitle className="text-base">Member details</CardTitle>
+          <CardHeader>
+            <CardTitle>Member Details</CardTitle>
             <CardDescription>
-              Select the conference, region, and church, then fill in the member
-              information.
+              Select conference → region → church and fill details
             </CardDescription>
           </CardHeader>
-          <CardContent className="pt-6">
+
+          <CardContent>
             <form onSubmit={handleSubmit} className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
+
+              {/* 🔥 SELECTS */}
+              <div className="grid md:grid-cols-3 gap-4">
+
+                {/* CONFERENCE */}
+                <div>
                   <Label>Conference</Label>
                   <Select
-                    onValueChange={(v) =>
-                      setSelectedConference(v ? Number(v) : null)
-                    }
+                    value={selectedConference}
+                    onValueChange={(v) => setSelectedConference(v ?? "")}
                   >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select conference" />
+                    <SelectTrigger>
+                      <SelectValue>
+                        {selectedConference
+                          ? conferences.find(
+                              (c) => String(c.id) === selectedConference
+                            )?.name
+                          : "Select conference"}
+                      </SelectValue>
                     </SelectTrigger>
+
                     <SelectContent>
                       {conferences.map((c) => (
                         <SelectItem key={c.id} value={String(c.id)}>
@@ -200,23 +233,24 @@ export default function MembershipPage() {
                   </Select>
                 </div>
 
-                <div className="space-y-2">
+                {/* REGION */}
+                <div>
                   <Label>Region</Label>
                   <Select
-                    onValueChange={(v) =>
-                      setSelectedRegion(v ? Number(v) : null)
-                    }
+                    value={selectedRegion}
+                    onValueChange={(v) => setSelectedRegion(v ?? "")}
                     disabled={!selectedConference}
                   >
-                    <SelectTrigger className="w-full">
-                      <SelectValue
-                        placeholder={
-                          selectedConference
-                            ? "Select region"
-                            : "Select conference first"
-                        }
-                      />
+                    <SelectTrigger>
+                      <SelectValue>
+                        {selectedRegion
+                          ? regions.find(
+                              (r) => String(r.id) === selectedRegion
+                            )?.name
+                          : "Select region"}
+                      </SelectValue>
                     </SelectTrigger>
+
                     <SelectContent>
                       {regions.map((r) => (
                         <SelectItem key={r.id} value={String(r.id)}>
@@ -227,21 +261,28 @@ export default function MembershipPage() {
                   </Select>
                 </div>
 
-                <div className="space-y-2">
+                {/* CHURCH */}
+                <div>
                   <Label>Church</Label>
                   <Select
-                    onValueChange={(v) =>
-                      handleChange("church_id", v ? Number(v) : 0)
-                    }
+                    value={selectedChurch}
+                    onValueChange={(v) => {
+                      const next = v ?? "";
+                      setSelectedChurch(next);
+                      handleChange("church_id", next ? Number(next) : 0);
+                    }}
                     disabled={!selectedRegion}
                   >
-                    <SelectTrigger className="w-full">
-                      <SelectValue
-                        placeholder={
-                          selectedRegion ? "Select church" : "Select region first"
-                        }
-                      />
+                    <SelectTrigger>
+                      <SelectValue>
+                        {selectedChurch
+                          ? churches.find(
+                              (c) => String(c.id) === selectedChurch
+                            )?.name
+                          : "Select church"}
+                      </SelectValue>
                     </SelectTrigger>
+
                     <SelectContent>
                       {churches.map((c) => (
                         <SelectItem key={c.id} value={String(c.id)}>
@@ -251,34 +292,37 @@ export default function MembershipPage() {
                     </SelectContent>
                   </Select>
                 </div>
+
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="first_name">First name</Label>
+              {/* NAMES */}
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <Label>First Name</Label>
                   <Input
-                    id="first_name"
-                    placeholder="e.g. King"
                     value={form.first_name}
-                    onChange={(e) => handleChange("first_name", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("first_name", e.target.value)
+                    }
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="last_name">Last name</Label>
+
+                <div>
+                  <Label>Last Name</Label>
                   <Input
-                    id="last_name"
-                    placeholder="e.g. Godo"
                     value={form.last_name}
-                    onChange={(e) => handleChange("last_name", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("last_name", e.target.value)
+                    }
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="date_of_birth">Date of birth</Label>
+              {/* DOB + SEX */}
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <Label>Date of Birth</Label>
                   <Input
-                    id="date_of_birth"
                     type="date"
                     value={form.date_of_birth}
                     onChange={(e) =>
@@ -286,12 +330,17 @@ export default function MembershipPage() {
                     }
                   />
                 </div>
-                <div className="space-y-2">
+
+                <div>
                   <Label>Sex</Label>
-                  <Select onValueChange={(v) => handleChange("sex", String(v))}>
-                    <SelectTrigger className="w-full">
+                  <Select
+                    value={form.sex}
+                    onValueChange={(v) => handleChange("sex", v ?? "")}
+                  >
+                    <SelectTrigger>
                       <SelectValue placeholder="Select sex" />
                     </SelectTrigger>
+
                     <SelectContent>
                       <SelectItem value="Male">Male</SelectItem>
                       <SelectItem value="Female">Female</SelectItem>
@@ -300,36 +349,30 @@ export default function MembershipPage() {
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <div>
-                  <div className="text-sm font-medium">Ministries</div>
-                  <div className="text-sm text-muted-foreground">
-                    Select all ministries the member belongs to.
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* MINISTRIES */}
+              <div>
+                <Label>Ministries</Label>
+                <div className="grid sm:grid-cols-2 gap-3 mt-2">
                   {ministries.map((m) => (
                     <label
                       key={m.id}
-                      className="flex items-center gap-3 rounded-lg border bg-background px-3 py-2"
+                      className="flex items-center gap-3 border p-2 rounded-lg"
                     >
                       <input
                         type="checkbox"
                         checked={form.ministries.includes(m.id)}
                         onChange={() => toggleMinistry(m.id)}
-                        className="h-4 w-4"
                       />
-                      <span className="text-sm">{m.name}</span>
+                      {m.name}
                     </label>
                   ))}
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
-                <Button type="submit" disabled={loading}>
-                  {loading ? "Submitting..." : "Register member"}
-                </Button>
-              </div>
+              <Button type="submit" disabled={loading}>
+                {loading ? "Submitting..." : "Register Member"}
+              </Button>
+
             </form>
           </CardContent>
         </Card>

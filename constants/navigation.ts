@@ -70,7 +70,10 @@ export const sidebarNavigation: Record<UserRole, NavItem[]> = {
 
   RUWADZANO_ADMIN: [
     { label: "Dashboard", href: "/dashboard/ruwadzano" },
-    { label: "Women Members", href: "/dashboard/ruwadzano/members" },
+    { label: "Women Fellowship", href: "/dashboard/ruwadzano/members" },
+    { label: "Men Fellowship", href: "/dashboard/ruwadzano/mens-fellowship" },
+    { label: "Volunteers", href: "/dashboard/ruwadzano/volunteers" },
+    { label: "Councils", href: "/dashboard/ruwadzano/councils" },
   ],
 
   SUNDAY_SCHOOL_ADMIN: [
