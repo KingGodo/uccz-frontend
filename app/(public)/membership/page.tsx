@@ -40,7 +40,6 @@ export default function MembershipPage() {
 
   const [loading, setLoading] = useState(false);
 
-  // ✅ STRICTLY STRING (NO NULL)
   const [selectedConference, setSelectedConference] = useState<string>("");
   const [selectedRegion, setSelectedRegion] = useState<string>("");
   const [selectedChurch, setSelectedChurch] = useState<string>("");
@@ -51,6 +50,8 @@ export default function MembershipPage() {
     last_name: "",
     sex: "",
     date_of_birth: "",
+    email: "",
+    phone: "",
     has_relative_in_uccz: false,
     ministries: [],
   });
@@ -60,11 +61,9 @@ export default function MembershipPage() {
     const fetchData = async () => {
       try {
         const confRes = await api.get<ApiResponse<Conference[]>>("/conferences");
-        console.log("📦 Conferences:", confRes.data.data);
         setConferences(confRes.data.data);
 
         const minRes = await api.get<ApiResponse<Ministry[]>>("/ministries");
-        console.log("📦 Ministries:", minRes.data.data);
         setMinistries(minRes.data.data);
       } catch (err) {
         console.error("❌ Initial fetch error:", err);
@@ -83,8 +82,6 @@ export default function MembershipPage() {
         const res = await api.get<ApiResponse<Region[]>>(
           `/regions/conference/${selectedConference}`
         );
-
-        console.log("📦 Regions:", res.data.data);
 
         setRegions(res.data.data);
         setChurches([]);
@@ -108,8 +105,6 @@ export default function MembershipPage() {
         const res = await api.get<ApiResponse<Church[]>>(
           `/churches/region/${selectedRegion}`
         );
-
-        console.log("📦 Churches:", res.data.data);
 
         setChurches(res.data.data);
         setSelectedChurch("");
@@ -203,10 +198,9 @@ export default function MembershipPage() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-8">
 
-              {/* 🔥 SELECTS */}
+              {/* SELECTS */}
               <div className="grid md:grid-cols-3 gap-4">
 
-                {/* CONFERENCE */}
                 <div>
                   <Label>Conference</Label>
                   <Select
@@ -233,7 +227,6 @@ export default function MembershipPage() {
                   </Select>
                 </div>
 
-                {/* REGION */}
                 <div>
                   <Label>Region</Label>
                   <Select
@@ -261,7 +254,6 @@ export default function MembershipPage() {
                   </Select>
                 </div>
 
-                {/* CHURCH */}
                 <div>
                   <Label>Church</Label>
                   <Select
@@ -313,6 +305,33 @@ export default function MembershipPage() {
                     value={form.last_name}
                     onChange={(e) =>
                       handleChange("last_name", e.target.value)
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* EMAIL + PHONE 🔥 */}
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <Label>Email</Label>
+                  <Input
+                    type="email"
+                    placeholder="example@gmail.com"
+                    value={form.email || ""}
+                    onChange={(e) =>
+                      handleChange("email", e.target.value)
+                    }
+                  />
+                </div>
+
+                <div>
+                  <Label>Phone</Label>
+                  <Input
+                    type="tel"
+                    placeholder="+263..."
+                    value={form.phone || ""}
+                    onChange={(e) =>
+                      handleChange("phone", e.target.value)
                     }
                   />
                 </div>

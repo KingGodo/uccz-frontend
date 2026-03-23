@@ -34,6 +34,10 @@ export interface MemberFormData {
   active_status?: string;
   date_joined_uccz?: string;
 
+  // 🔥 NEW FIELDS
+  email?: string;
+  phone?: string;
+
   has_relative_in_uccz: boolean;
 
   ministries: number[];
