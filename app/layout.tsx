@@ -1,34 +1,53 @@
+/**
+ * UCCZ Root Layout — app/layout.tsx
+ *
+ * Loads the two brand fonts globally:
+ *   - Libre Baskerville → headings, logo, scripture quotes (authoritative, traditional)
+ *   - Source Sans 3     → nav, body, UI text (clean, readable, professional)
+ *
+ * Drop-in addition — keep whatever else you already have in this file.
+ * Just make sure the <head> font links and the className on <body> are present.
+ */
+
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Providers from "./providers";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
-  title: "UCCZ",
-  description: "Created by the CYF IT Team",
+  title: "UCCZ | United Church of Christ in Zimbabwe",
+  description:
+    "United Church of Christ in Zimbabwe — a union of believers grounded in faith, community, and service since 1893.",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Providers>{children}</Providers>
+      <head>
+        {/*
+         * Google Fonts — Libre Baskerville + Source Sans 3
+         * preconnect speeds up the font load
+         */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+
+      {/*
+       * font-sans applies Source Sans 3 as the default body font.
+       * Use font-serif class (or inline style) for headings / display text.
+       */}
+      <body className="font-sans antialiased bg-white text-gray-900">
+        {children}
       </body>
     </html>
   );
