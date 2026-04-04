@@ -7,7 +7,7 @@ export interface ApiResponse<T> {
 }
 
 export const api = axios.create({
-  baseURL: "http://127.0.0.1:5000/api",
+  baseURL: "http://142.93.173.218:5000/api",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
