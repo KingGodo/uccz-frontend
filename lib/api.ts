@@ -7,7 +7,7 @@ export interface ApiResponse<T> {
 }
 
 export const api = axios.create({
-  baseURL: "http://142.93.173.218:5000/api",
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
