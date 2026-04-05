@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   HeroSection,
@@ -9,14 +9,13 @@ import {
   NewsSection,
   SponsorsSection,
   CallToActionSection,
-} from '@/components/landing';
-import Navbar from '@/components/layout/navbar';
-import Footer from '@/components/layout/footer';
+} from "@/components/landing";
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col">
-      <Navbar />
+    <main className="flex flex-col">
+      {/* Hero sits directly under the fixed navbar — no top padding needed
+          because HeroSection is full-screen and handles its own offset */}
       <HeroSection />
       <AboutSection />
       <ServicesSection />
@@ -25,7 +24,6 @@ export default function HomePage() {
       <NewsSection />
       <SponsorsSection />
       <CallToActionSection />
-      <Footer />
-    </div>
+    </main>
   );
 }

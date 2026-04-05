@@ -1,7 +1,7 @@
+"use client";
+
 /**
  * UCCZ Footer — components/layout/footer.tsx
- *
- * Server component — no interactivity needed except newsletter form.
  *
  * Improvements over original:
  * - bg-primary undefined token → actual brand color rgb(54, 69, 99)
@@ -301,7 +301,9 @@ export default function Footer() {
             className="flex items-center gap-1.5 text-[12px] text-white/30"
             style={{ fontFamily: "'Source Sans 3', sans-serif" }}
           >
-            Made by CYF IT Team
+            Made with{" "}
+            <Heart size={11} className="fill-red-400 text-red-400" aria-hidden="true" />
+            {" "}in Zimbabwe
           </p>
         </div>
       </div>
