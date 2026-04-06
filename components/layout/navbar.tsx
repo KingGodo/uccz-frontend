@@ -20,14 +20,6 @@ const BRAND_BG = "rgba(54, 69, 99, 0.07)";
 type NavChild = { name: string; href: string; icon: React.ReactNode; desc: string };
 type NavLink  = { name: string; href: string; children?: NavChild[] };
 
-// ── Navigation structure ──────────────────────────────────────────────────
-//
-// "Who We Are" children → all anchor to sections on /about
-//   e.g. /about#team, /about#testimonials
-//   The /about page renders each section with a matching id="team" etc.
-//
-// "Conferences & Councils" children → each is a real separate page
-//
 const NAV_LINKS: NavLink[] = [
   { name: "Home", href: "/" },
   {
