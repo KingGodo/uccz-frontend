@@ -2,9 +2,6 @@
 import AboutSection     from "@/components/landing/about-section";
 import TestimonialsSection from "@/components/landing/testimonials-section";
 
-// ── Placeholder sections (build these out as you go) ──────────────────────
-// Each must have the correct id and scroll-mt offset.
-
 function TeamSection() {
   return (
     <section

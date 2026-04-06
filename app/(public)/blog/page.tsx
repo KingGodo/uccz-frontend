@@ -1,19 +1,5 @@
 "use client";
 
-/**
- * UCCZ Blog Page — app/(public)/blog/page.tsx
- *
- * Real blog posts from live uccz.org.
- * Features:
- * - Hero header with brand color
- * - Category filter tabs (All, Faith, Love, Humility, Giving, etc.)
- * - Search input
- * - Featured post (first/largest)
- * - Responsive card grid
- * - Framer Motion stagger animations
- * - App download banner (from live site)
- */
-
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";

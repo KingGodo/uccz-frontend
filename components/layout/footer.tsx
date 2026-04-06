@@ -1,21 +1,5 @@
 "use client";
 
-/**
- * UCCZ Footer — components/layout/footer.tsx
- *
- * Improvements over original:
- * - bg-primary undefined token → actual brand color rgb(54, 69, 99)
- * - hover:text-secondary undefined token → brand accent white/80
- * - Real contact details from live uccz.org (address, phone, email)
- * - Newsletter subscription bar added (from live site)
- * - Social media links added
- * - Ministries column links are now real <Link> components
- * - Full site map column added (mirrors live uccz.org footer)
- * - Logo + tagline in brand column
- * - Bottom bar: copyright + privacy policy link
- * - Libre Baskerville headings + Source Sans 3 body
- */
-
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -64,58 +48,6 @@ const SOCIAL = [
   { icon: <Instagram size={15} />, href: "#", label: "Instagram" },
 ];
 
-// ─────────────────────────────────────────────────────────────────────────
-// NEWSLETTER BAR — sits at the very top of the footer
-// ─────────────────────────────────────────────────────────────────────────
-function NewsletterBar() {
-  return (
-    <div
-      className="border-b border-white/10"
-      style={{ backgroundColor: BRAND_D }}
-    >
-      <div className="mx-auto max-w-7xl px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-6">
-        <div>
-          <p
-            className="text-[15px] font-bold text-white"
-            style={{ fontFamily: "'Libre Baskerville', Georgia, serif" }}
-          >
-            Stay Connected
-          </p>
-          <p
-            className="text-[12.5px] text-white/55 mt-0.5"
-            style={{ fontFamily: "'Source Sans 3', sans-serif" }}
-          >
-            Receive updates, sermons and event news in your inbox.
-          </p>
-        </div>
-
-        {/* Newsletter form — basic HTML, wire up to your backend */}
-        <form
-          className="flex w-full sm:w-auto gap-2"
-          onSubmit={(e) => e.preventDefault()}
-          aria-label="Newsletter subscription"
-        >
-          <input
-            type="email"
-            required
-            placeholder="Enter your email"
-            aria-label="Email address"
-            className="flex-1 sm:w-[240px] px-4 py-2.5 rounded-lg text-[13px] bg-white/10 border border-white/15 text-white placeholder:text-white/35 outline-none focus:border-white/40 focus:bg-white/15 transition-all duration-200"
-            style={{ fontFamily: "'Source Sans 3', sans-serif" }}
-          />
-          <button
-            type="submit"
-            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-[13px] font-semibold bg-white transition-all duration-200 hover:bg-white/90 active:scale-[0.97] shrink-0"
-            style={{ color: BRAND, fontFamily: "'Source Sans 3', sans-serif" }}
-          >
-            Subscribe
-            <ArrowRight size={13} aria-hidden="true" />
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-}
 
 // ─────────────────────────────────────────────────────────────────────────
 // FOOTER COLUMN HEADING
@@ -158,8 +90,7 @@ export default function Footer() {
       style={{ backgroundColor: BRAND }}
       role="contentinfo"
     >
-      {/* Newsletter bar */}
-      <NewsletterBar />
+
 
       {/* Main grid */}
       <div className="mx-auto max-w-7xl px-6 py-16">

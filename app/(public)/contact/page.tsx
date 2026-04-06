@@ -1,17 +1,5 @@
 "use client";
 
-/**
- * UCCZ Contact Page — app/(public)/contact/page.tsx
- *
- * Matches the blog page design system exactly:
- * - Same brand color (rgb(54, 69, 99))
- * - Same typography: Libre Baskerville (headings) + Source Sans 3 (body)
- * - Same hero header pattern
- * - Same card/border/shadow style
- * - Framer Motion stagger animations
- * - Contact form + info cards + map embed
- */
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import {
