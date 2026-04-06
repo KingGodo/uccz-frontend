@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
-import { MessageCircle } from "lucide-react"
+import UcczChat from "@/components/chat/uccz-chat"
 
 interface FloatingButtonProps {
   className?: string
@@ -41,45 +41,26 @@ export function FloatingButton({ className }: FloatingButtonProps) {
               "transition-all duration-300 ease-out",
               // Focus styles
               "focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2",
-              // Accessibility
-              "aria-label='Open UCCZ AI Assistant'",
               className
             )}
+            aria-label="Open UCCZ AI Assistant"
             aria-describedby="fab-tooltip"
           >
             {/* Pulse effect */}
             <div className="absolute inset-0 rounded-full bg-primary/30 dark:bg-primary/40 animate-pulse opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             {/* Ripple effect on hover */}
             <div className="absolute inset-0 rounded-full bg-white/20 dark:bg-black/20 scale-0 group-hover:scale-100 transition-transform duration-300" />
-            {/* Icon */}
-            <MessageCircle className="w-6 h-6 relative z-10" />
+            <img src="/logo.png" alt="UCCZ logo" className="relative z-10 h-8 w-8 rounded-full object-contain" />
           </button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <MessageCircle className="w-5 h-5" />
-              UCCZ AI Assistant
+            <DialogTitle className="flex items-center gap-3">
+              <img src="/logo.png" alt="UCCZ logo" className="h-8 w-8 rounded-full object-contain" />
+              <span className="text-lg font-semibold">UCCZ AI Assistant</span>
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
-            <p className="text-muted-foreground">
-              Welcome to the UCCZ AI Assistant! I'm here to help you with information about the United Church of Christ in Zimbabwe.
-            </p>
-            <div className="bg-muted p-4 rounded-lg">
-              <p className="text-sm">
-                <strong>Coming Soon:</strong> Interactive chatbot for church services, events, membership, and more.
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setIsOpen(false)}>
-                Close
-              </Button>
-              <Button onClick={() => setIsOpen(false)}>
-                Get Started
-              </Button>
-            </div>
-          </div>
+          <UcczChat />
         </DialogContent>
       </Dialog>
 
