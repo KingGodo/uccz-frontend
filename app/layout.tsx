@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Providers from "./providers"; // ✅ ADD THIS
+import { FloatingButton } from "@/components/ui/floating-button";
 
 export const metadata: Metadata = {
   title: "UCCZ | United Church of Christ in Zimbabwe",
@@ -32,6 +33,7 @@ export default function RootLayout({
         <Providers>
           {children}
         </Providers>
+        <FloatingButton />
       </body>
     </html>
   );

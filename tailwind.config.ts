@@ -24,9 +24,15 @@ const config = {
           "0%":   { transform: "translateX(0%)" },
           "100%": { transform: "translateX(-50%)" },
         },
+        shake: {
+          "0%, 100%": { transform: "translateX(0)" },
+          "10%, 30%, 50%, 70%, 90%": { transform: "translateX(-1px)" },
+          "20%, 40%, 60%, 80%": { transform: "translateX(1px)" },
+        },
       },
       animation: {
         marquee: "marquee 20s linear infinite",
+        shake: "shake 4s ease-in-out infinite",
       },
     },
   },
